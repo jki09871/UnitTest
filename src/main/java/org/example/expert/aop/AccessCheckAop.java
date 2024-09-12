@@ -9,6 +9,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Aspect
@@ -21,15 +24,14 @@ public class AccessCheckAop {
     public void logApiRequest() {
 
         // 요청 정보를 가져오기 위해 HttpServletRequest 사용
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes != null) {
-            HttpServletRequest request = attributes.getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        if (request != null) {
 
             // 요청한 사용자의 ID (여기서는 Authorization 헤더에서 추출한다고 가정)
             Long userId = (Long) request.getAttribute("userId");  // JWT 토큰이나 세션 등에서 추출 가능
 
-            // 요청 시각
-            LocalDateTime requestTime = LocalDateTime.now();
+
+            String requestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             // 요청 URL
             String requestUrl = request.getRequestURL().toString();
